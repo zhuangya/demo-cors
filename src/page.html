@@ -1,0 +1,49 @@
+<div id="delegator">
+  <button data-api="http://127.0.0.1:8080" class="trigger">
+    send to server with CORS support
+  </button>
+  <button data-api="http://127.0.0.1:8081" class="trigger">
+    send to server without CORS support
+  </button>
+</div>
+
+<style>
+  #output {
+    padding: 20px;
+    font-family: monospace;
+
+    background: black;
+    color: #0f0;
+  }
+  #error {
+    color: red;
+  }
+</style>
+<div id="output"></div>
+<div id="error"></div>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const delegator = document.getElementById("delegator");
+
+    delegator.addEventListener("click", async (event) => {
+      if (event.target.matches(".trigger")) {
+        event.preventDefault();
+        ["output", "error"].forEach(
+          (id) => (document.getElementById(id).textContent = "")
+        );
+
+        try {
+          const response = await fetch(event.target.dataset.api, {
+            method: "POST",
+          });
+
+          const json = await response.json();
+
+          document.getElementById("output").textContent = JSON.stringify(json);
+        } catch (e) {
+          document.getElementById("error").textContent = e.message;
+        }
+      }
+    });
+  });
+</script>
